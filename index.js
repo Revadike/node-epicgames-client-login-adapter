@@ -116,7 +116,7 @@ class EpicGamesClientLoginAdapter {
       await usernameOrEmailField.type(login, { delay: options.inputDelay });
       const passwordField = await page.waitForSelector('#password');
       await passwordField.type(credentials.password, { delay: options.inputDelay });
-      const loginButton = await page.waitForSelector('#login:not(:disabled)');
+      const loginButton = await page.waitForSelector('#sign-in:not(:disabled)');
       await loginButton.click();
     }
 
@@ -195,7 +195,8 @@ class EpicGamesClientLoginAdapter {
     const pendingDocument = new PendingXHR(page);
     pendingDocument.resourceType = 'document';
     await page.goto('https://epicgames.com/id');
-    const login = credentials.login || credentials.email || credentials.username;
+    const 
+    = credentials.login || credentials.email || credentials.username;
     if (login && credentials.password) {
       const loginWithEpicButton = await page.waitForSelector('#login-with-epic');
       await loginWithEpicButton.click();
