@@ -195,8 +195,7 @@ class EpicGamesClientLoginAdapter {
     const pendingDocument = new PendingXHR(page);
     pendingDocument.resourceType = 'document';
     await page.goto('https://epicgames.com/id');
-    const 
-    = credentials.login || credentials.email || credentials.username;
+    const login = credentials.login || credentials.email || credentials.username;
     if (login && credentials.password) {
       const loginWithEpicButton = await page.waitForSelector('#login-with-epic');
       await loginWithEpicButton.click();
