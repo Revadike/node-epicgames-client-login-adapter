@@ -177,6 +177,7 @@ class EpicGamesClientLoginAdapter {
     };
     const browser = await Puppeteer.launch({
       headless: false,
+      userDataDir: 'chromium-data-dir',
       defaultViewport: {
         width: options.width,
         height: options.height,
