@@ -54,9 +54,9 @@ class EpicGamesClientLoginAdapter {
         });
       }
       await page.setRequestInterception(Boolean(oldXsrfToken));
-        try {
-          await page.goto('https://www.epicgames.com/id/api/csrf');
-        } catch (e) {}
+      try {
+        await page.goto('https://www.epicgames.com/id/api/csrf');
+      } catch (e) {}
       await page.setRequestInterception(false);
 
 
@@ -107,17 +107,20 @@ class EpicGamesClientLoginAdapter {
     return result;
   }
 
-  static async authenticate(credentials, page, options) {
+  static async authenticate(credentials, page, options, browser) {
     console.log('Logging in');
     const login = credentials.login || credentials.email || credentials.username;
     if (login && credentials.password) {
-      const loginWithEpicButton = await page.waitForSelector('#login-with-epic');
-      await loginWithEpicButton.click();
-      const usernameOrEmailField = await page.waitForSelector('#email');
+      const loginWithSteamButton = await page.waitForSelector('#login-with-steam');
+      await loginWithSteamButton.click();
+      const newPage = await new Promise(x => browser.once('targetcreated', target => x(target.page())));
+
+      const usernameOrEmailField = await newPage.waitForSelector('#steamAccountName');
       await usernameOrEmailField.type(login, { delay: options.inputDelay });
-      const passwordField = await page.waitForSelector('#password');
+
+      const passwordField = await newPage.waitForSelector('#steamPassword');
       await passwordField.type(credentials.password, { delay: options.inputDelay });
-      const loginButton = await page.waitForSelector('#sign-in:not(:disabled)');
+      const loginButton = await newPage.waitForSelector('#imageLogin');
       await loginButton.click();
     }
 
@@ -153,9 +156,9 @@ class EpicGamesClientLoginAdapter {
 
       // Click on "Verify" button
       await page.mouse.click(
-        captchaBoundingBox.x + captchaBoundingBox.width / 2.1 + 15 * Math.random(),
-        captchaBoundingBox.y + captchaBoundingBox.height * 3.2/4 + 15 * Math.random(),
-        { delay: clickDelay }
+          captchaBoundingBox.x + captchaBoundingBox.width / 2.1 + 15 * Math.random(),
+          captchaBoundingBox.y + captchaBoundingBox.height * 3.2/4 + 15 * Math.random(),
+          { delay: clickDelay }
       );
     } else {
       await element.click({ delay: clickDelay });
@@ -217,7 +220,7 @@ class EpicGamesClientLoginAdapter {
     await pendingDocument.waitOnceForAllXhrFinished();
 
     if (page.url() != this.ACCOUNT_PAGE) {
-      await this.authenticate(credentials, page, options);
+      await this.authenticate(credentials, page, options, browser);
     }
 
     return new this(browser);
